@@ -1,8 +1,14 @@
 .banner {
     height: 200px;
-    background-color: darkblue;
+    background-color: #20315A;
     text-align: center;
     color: white;
-    border-radius: 5px;
-    padding-top: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fa-newspaper{
+    padding-right: 10px;
 }
