@@ -21,7 +21,7 @@ function queryString() {
 }
 
 $.ajax({
-  url: queryURL,
+  url: queryString(),
   method: "GET"
 }).then(function(response) {
   var results = response.data;
