@@ -1,15 +1,16 @@
 //get the search terms from the input, store in variable
 
-var numberOfArticles = 0;
+var numberOfArticles = 1;
 
 function queryString() {
   var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?";
   var queryParameters = { "api-key": "6IrupsUwKdAX6Yp4HlfCZEXtuHLv0Gt3" };
 
-  queryParameters.q = $("#searchTerms")
+  queryParameters.q = $("#searchTerm")
     .val()
     .trim();
-  var begin_date = $("#beginYear");
+  var begin_date = $("#inputMDEx1");
+  var end_date = $("#inputMDEx2");
 
   if (parseInt(begin_date)) {
     queryParameters.begin_date = begin_date;
@@ -20,24 +21,39 @@ function queryString() {
   return queryURL + $.param(queryParameters);
 }
 
-$.ajax({
-  url: queryString(),
-  method: "GET"
-}).then(function(response) {
-  var results = response.data;
-  const count = Math.min(numberOfArticles, results.length);
-  for (var i = 0; i < count; i++) {
+function renderResults(results) {
+  var docs = results.docs;
+  console.log(docs);
+  for (var i = 0; i < docs.length; i++) {
+    let imageSRC = "https://static01.nyt.com/" + docs[i].multimedia[7].url;
     var result = $("<div>");
-    var image = $("<img>").attr("src", response.docs.multimedia.url);
-    var headline = $("<h2>").text(response.docs.headline);
-    var abstract = $("<p>").text(response.docs.abstract);
-    var url = $("<p>").text(response.docs.web_url);
-    var date = $("<p>").text(response.docs.pub_date);
+    var image = $("<img>").attr({
+      src: imageSRC
+    });
+    var headline = $("<h2>").text(docs[i].headline.main);
+    var abstract = $("<p>").text(docs[i].abstract);
+    var url = $("<p>").text(docs[i].web_url);
+    var date = $("<p>").text(docs[i].pub_date);
     result.append(image);
     result.append(headline);
     result.append(abstract);
     result.append(url);
     result.append(date);
-    $("#results").append(results);
+    $("#results").append(result);
   }
+}
+
+async function queryAPI(callback) {
+  $.ajax({
+    url: queryString(),
+    method: "GET"
+  }).then(function(response) {
+    var results = response.response;
+    callback(results);
+  });
+}
+
+$("#search").submit(function(e) {
+  e.preventDefault();
+  queryAPI(renderResults);
 });
